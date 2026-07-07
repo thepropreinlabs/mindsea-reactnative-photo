@@ -1,11 +1,7 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
-  content: [
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./components/**/*.{js,jsx,ts,tsx}",
-  ],
-  presets: [require("nativewind/preset")],
   theme: {
     extend: {
       colors: {
@@ -37,7 +33,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ["System"],
+        sans: ["Inter", "system-ui", "sans-serif"],
       },
     },
   },
