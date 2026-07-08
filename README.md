@@ -43,8 +43,6 @@ yarn ios              # iOS simulator
 yarn android          # Android emulator
 ```
 
-If Metro can't reach an Android emulator (blank Expo Go screen), start with `npx expo start --localhost` and run `adb reverse tcp:8081 tcp:8081`. On a phone hotspot, `npx expo start --tunnel` is the reliable fallback.
-
 ### Test / typecheck
 
 ```bash
