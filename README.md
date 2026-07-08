@@ -47,7 +47,6 @@ yarn android          # Android emulator
 
 ```bash
 yarn test             # run once
-yarn test:watch       # watch mode
 yarn typecheck
 ```
 

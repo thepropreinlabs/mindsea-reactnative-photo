@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
-    "postinstall": "node -e \"const fs=require('fs');const d='node_modules/react-native-worklets';fs.mkdirSync(d,{recursive:true});fs.writeFileSync(d+'/package.json',JSON.stringify({name:'react-native-worklets',version:'1.0.0',main:'./index.js'}));fs.writeFileSync(d+'/index.js',\\\"module.exports=require('react-native-worklets-core');\\\");fs.writeFileSync(d+'/plugin.js',\\\"module.exports=require('react-native-worklets-core/plugin');\\\")\"",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build": "expo export --platform web",
     "test": "jest --watchAll=false",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.62.7",
