@@ -1,150 +1,105 @@
 # Photo Gallery
 
-A React Native photo gallery app built with Expo and TypeScript. Browse photos from the JSONPlaceholder API, search by title, filter by album, and tap any photo to see its full detail.
+A React Native photo gallery built with Expo and TypeScript. Browse photos from the JSONPlaceholder API, search by title, filter by album, and tap any photo for its detail view.
 
 ## Tech Stack
 
-| Concern | Choice |
-|---------|--------|
-| Framework | Expo (SDK 52) + React Native |
-| Language | TypeScript |
-| Navigation | Expo Router v4 (file-based) |
-| Data fetching | TanStack React Query v5 |
-| Styling | NativeWind v4 (Tailwind CSS for RN) |
-| Component library | React Native Reusables-style components |
-| Testing | Jest + React Testing Library |
+| Concern       | Choice                                 |
+| ------------- | -------------------------------------- |
+| Framework     | Expo (SDK 55) + React Native           |
+| Language      | TypeScript                             |
+| Navigation    | Expo Router (file-based)               |
+| Data fetching | TanStack React Query v5                |
+| Styling       | NativeWind v4                          |
+| Animation     | Reanimated 4 (+ react-native-worklets) |
+| Testing       | Jest + React Testing Library           |
 
 ## API
 
 **Primary data:** [JSONPlaceholder /photos](https://jsonplaceholder.typicode.com/photos)
 
-The spec references `https://picsum.photos/images`, but the required fields (`title`, `thumbnailUrl`, `url`, `albumId`) exactly match the JSONPlaceholder photos endpoint. JSONPlaceholder is the correct source; picsum.photos is used for rendering real photographic images via its `/seed/:id` endpoint (e.g., `https://picsum.photos/seed/1/300/300`).
+The required fields (`title`, `thumbnailUrl`, `url`, `albumId`) match the JSONPlaceholder photos endpoint. picsum.photos renders real images via `/seed/:id` (e.g. `https://picsum.photos/seed/1/300/300`).
 
 ## Setup
 
 ### Prerequisites
 
-- Node.js 18 or later
-- npm or yarn
-- Expo Go app on your phone (optional for physical device testing)
+- **Node.js 22 or later.** SDK 55's tooling and several transitive dependencies require it; Node 18/20 will fail to install. With nvm: `nvm install 22 && nvm use 22`.
+- **yarn.** This project uses `yarn.lock` — use yarn, not npm, to avoid lockfile conflicts.
+- Expo Go on a physical device (optional).
 
 ### Install
 
 ```bash
-npm install
+yarn install
 ```
 
 ### Run
 
 ```bash
-# Interactive launcher (choose iOS / Android / web)
-npm start
-
-# Web directly
-npm run web
-
-# iOS simulator
-npm run ios
-
-# Android emulator
-npm run android
+yarn start            # interactive launcher (iOS / Android / web)
+yarn web              # web
+yarn ios              # iOS simulator
+yarn android          # Android emulator
 ```
 
-### Test
+If Metro can't reach an Android emulator (blank Expo Go screen), start with `npx expo start --localhost` and run `adb reverse tcp:8081 tcp:8081`. On a phone hotspot, `npx expo start --tunnel` is the reliable fallback.
+
+### Test / typecheck
 
 ```bash
-# Run all tests once
-npm test
-
-# Watch mode
-npm run test:watch
-```
-
-### Type check
-
-```bash
-npm run typecheck
+yarn test             # run once
+yarn test:watch       # watch mode
+yarn typecheck
 ```
 
 ## Features
 
-### Core
-- **List screen** — responsive 2-4 column grid of photo cards showing a thumbnail and title
-- **Detail screen** — full-resolution image with photo ID, album ID, and title
+**Core**
 
-### Bonus features implemented
+- List screen — responsive 2–4 column grid of photo cards (thumbnail + title)
+- Detail screen — full-resolution image with photo ID, album ID, and title
 
-#### Search
-Real-time title search with 400ms debounce. Uses JSONPlaceholder's `title_like` query parameter so filtering happens on the server, keeping the response payload small.
+**Search** — real-time title search, 400ms debounce, server-side via `title_like`.
 
-#### Pagination
-Photos load 50 at a time using `useInfiniteQuery`. Fetching the next page triggers automatically when the user scrolls within 40% of the list bottom (`onEndReachedThreshold={0.4}`), providing seamless infinite scroll.
+**Pagination** — 50 photos at a time with `useInfiniteQuery`; loads more at 40% from the list bottom.
 
-#### Automated tests
-Three test suites covering:
-- `__tests__/api.test.ts` — unit tests for all API functions including error handling, query param construction, and URL helpers
-- `__tests__/PhotoCard.test.tsx` — component tests verifying rendering and navigation
-- `__tests__/useDebounce.test.ts` — hook tests using fake timers to verify debounce timing behavior
+**Tests** — `api.test.ts` (API functions, error handling, URL helpers), `PhotoCard.test.tsx` (rendering + navigation), `useDebounce.test.ts` (debounce timing with fake timers).
 
-### Additional touches
-- **Loading skeletons** — animated placeholder cards while the first page loads
-- **Empty state** — friendly message when search/filter yields no results
-- **Error state** — descriptive error screens with retry buttons on both screens
-- **Responsive grid** — 2 columns on mobile, 3 on tablet, 4 on desktop/web
-- **Album filter chips** — horizontal scrollable row of album ID badges (Albums 1-10)
-- **Result count** — shows how many photos match the current filters
-- **Accessibility** — `accessibilityRole`, `accessibilityLabel`, and `accessibilityHint` on interactive elements
-- **Dark mode** — NativeWind dark: classes throughout, respects system preference
+**Other** — loading skeletons, empty/error states with retry, responsive grid (2/3/4 cols), album filter chips (1–10), result count, accessibility labels, dark mode.
 
 ## Project Structure
 
 ```
 photo-gallery/
 ├── app/
-│   ├── _layout.tsx          # Root layout: QueryClientProvider + Stack navigator
-│   ├── index.tsx            # List screen with search, filter, infinite scroll
-│   └── photo/
-│       └── [id].tsx         # Detail screen
+│   ├── _layout.tsx          # QueryClientProvider + Stack navigator
+│   ├── index.tsx            # List: search, filter, infinite scroll
+│   └── photo/[id].tsx       # Detail screen
 ├── components/
-│   ├── ui/                  # Reusable primitives (RNR-style)
-│   │   ├── badge.tsx
-│   │   ├── button.tsx
-│   │   ├── card.tsx
-│   │   ├── input.tsx
-│   │   └── text.tsx
+│   ├── ui/                  # badge, button, card, input, text
 │   ├── AlbumFilter.tsx
 │   ├── PhotoCard.tsx
 │   ├── PhotoCardSkeleton.tsx
 │   └── SearchBar.tsx
-├── hooks/
-│   ├── useDebounce.ts
-│   └── usePhotos.ts
-├── lib/
-│   ├── api.ts               # Fetch functions and URL helpers
-│   ├── cn.ts                # clsx + tailwind-merge utility
-│   └── queryClient.ts       # Shared QueryClient instance
-├── types/
-│   └── photo.ts
-├── __tests__/
-│   ├── api.test.ts
-│   ├── PhotoCard.test.tsx
-│   └── useDebounce.test.ts
-├── global.css               # Tailwind directives
+├── hooks/                   # useDebounce, usePhotos
+├── lib/                     # api, cn, queryClient
+├── types/photo.ts
+├── __tests__/               # api, PhotoCard, useDebounce
+├── global.css
 ├── tailwind.config.js
 ├── babel.config.js
 └── metro.config.js
 ```
 
-## Design Decisions
+## Notes
 
-**Why JSONPlaceholder over picsum.photos/images?**
-The spec lists field names (`title`, `thumbnailUrl`, `albumId`) that only exist in the JSONPlaceholder response shape. picsum.photos/images returns `author`, `download_url`, and `width`/`height` — no album concept. Using JSONPlaceholder with picsum for image rendering gives us both structured metadata and real photographs.
+**Data source** — JSONPlaceholder supplies the metadata (`title`, `albumId`, `thumbnailUrl`); picsum.photos renders the actual images. picsum.photos/images alone lacks an album concept.
 
-**Why `useInfiniteQuery` instead of page state?**
-Infinite scroll is the natural pattern for a photo grid on mobile. `useInfiniteQuery` accumulates pages in a single cache entry, handles deduplication, and exposes `hasNextPage`/`isFetchingNextPage` cleanly. Switching to cursor-based pagination in the future is a one-line change to `getNextPageParam`.
+**Infinite scroll** — `useInfiniteQuery` accumulates pages in one cache entry and exposes `hasNextPage` / `isFetchingNextPage`. Moving to cursor-based paging is a one-line change to `getNextPageParam`.
 
-**Why debounce server-side search instead of client-side filter?**
-With 5000 photos and pagination, the client only holds the loaded pages in memory. Client-side filtering would miss photos on unloaded pages. Sending `title_like` to the server resets pagination correctly and returns accurate counts from `X-Total-Count`.
+**Server-side search** — with 5000 paginated photos, client-side filtering would miss unloaded pages. `title_like` resets pagination correctly and returns accurate `X-Total-Count`.
 
-**React Native Reusables note**
-RNR is normally consumed via a CLI that copies component source into your project (similar to shadcn/ui). In this repo the UI components under `components/ui/` are written from scratch following RNR's API conventions (forwarded refs, `className` prop, `cn()` utility) so no additional CLI step is required after `npm install`.
+**UI components** — `components/ui/` follows React Native Reusables conventions (forwarded refs, `className`, `cn()`) but is written in-repo, so no CLI copy step is needed after install.
+
+**Assets** — `app.json` uses Expo's default icon/splash; no custom asset files are required to run.
