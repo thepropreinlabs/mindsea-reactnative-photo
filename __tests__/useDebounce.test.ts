@@ -5,12 +5,12 @@ jest.useFakeTimers();
 
 describe("useDebounce", () => {
   it("returns the initial value immediately", () => {
-    const { result } = renderHook(() => useDebounce("initial", 300));
+    const { result } = renderHook<string, { value: string }>(() => useDebounce("initial", 300));
     expect(result.current).toBe("initial");
   });
 
   it("does not update before the delay has elapsed", () => {
-    const { result, rerender } = renderHook(
+    const { result, rerender } = renderHook<string, { value: string }>(
       ({ value }) => useDebounce(value, 300),
       { initialProps: { value: "first" } }
     );
@@ -24,7 +24,7 @@ describe("useDebounce", () => {
   });
 
   it("updates after the delay has elapsed", () => {
-    const { result, rerender } = renderHook(
+    const { result, rerender } = renderHook<string, { value: string }>(
       ({ value }) => useDebounce(value, 300),
       { initialProps: { value: "first" } }
     );
@@ -38,7 +38,7 @@ describe("useDebounce", () => {
   });
 
   it("resets the timer on rapid updates and only fires once", () => {
-    const { result, rerender } = renderHook(
+    const { result, rerender } = renderHook<string, { value: string }>(
       ({ value }) => useDebounce(value, 300),
       { initialProps: { value: "a" } }
     );
